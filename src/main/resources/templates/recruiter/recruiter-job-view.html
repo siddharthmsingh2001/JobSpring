@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org/" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" style="height: 100%">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Candidate Dashboard</title>
+        <meta charset="utf-8"/>
+        <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+        <meta name="description" content=""/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/styles.css}"/>
+        <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
+        <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/font-awesome.min.css}"/>
+        <link href='https://fonts.googleapis.com/css?family=Montserrat' rel='stylesheet'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    </head>
+    <body>
+        <header class="navbar navbar-expand-lg navbar-dark">
+            <label class="mt-2 ms-5 font-weight-bold h5">
+                <a style="color: white">JobSpring</a>
+                <span class="logo_com font-weight-bold h5" style="color: white" >.com</span>
+            </label>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav m-auto mt-2 mt-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/recruiter-dashboard/add-job-post}"><i class="fa-solid fa-file-circle-plus"></i>Post New Job</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" th:href="@{/recruiter-dashboard}"> <i class="fa-solid fa-eye"></i>View Your Jobs</a>
+                    </li>
+                    <li>
+                        <a class="nav-link" th:href="@{/recruiter-dashboard/profile}"> <i class="fa-solid fa-pencil"></i>Edit Account</a>
+                    </li>
+                </ul>
+                <img
+                        class="rounded-circle me-3"
+                        height="50px"
+                        width="50x"
+                        th:src="@{${recruiterProfileDto.profilePhotoUrl}}"
+                />
+                <label th:if="${recruiterProfileDto.firstName != null && recruiterProfileDto.lastName != null}"
+                       th:text="${recruiterProfileDto.firstName+' '+recruiterProfileDto.lastName}"
+                       class="nav-item nav-link px-2 me-3">
+                </label>
+                <label th:unless="${recruiterProfileDto.firstName != null && recruiterProfileDto.lastName != null}" th:text="${username}"
+                       class="nav-item nav-link px-2 me-3">
+                </label>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="myBtn-light me-5">Logout</button>
+                </form>
+            </div>
+        </header>
+        <section class="section">
+            <article>
+                <div class="box px-3">
+                    <a class="mt-3 ms-3 primary" th:href="@{/recruiter-dashboard}"><i class="fa-solid fa-angle-left me-1"></i> Back to Search Results </a>
+                    <h1 class="primary-title mt-3"> Job Details </h1>
+                    <div class="ms-3">
+                        <h4 th:text="${jobPostActivityDto.jobTitle}" class="job-title text-left"> Job Title </h4>
+                        <div class="mt-1">
+                            <p th:text="${jobPostActivityDto.jobLocationDto.city+', '+ jobPostActivityDto.jobLocationDto.state}"
+                               class="m-0"> City, State</p>
+                            <p th:text="${jobPostActivityDto.jobCompanyDto.name}">Company</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="box mt-3">
+                    <label class="large-label px-3 mt-3"> Job Specs </label>
+                    <div class="job-row">
+                        <div class="row ">
+                            <div class="col-md-3">
+                                <label class="text-left">Date Posted:<span th:text="${jobPostActivityDto.postedDate}">DD MM YYYY</span></label>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <label> Salary: <span th:text="${jobPostActivityDto.salary}">xxk - xxxk/y</span></label>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <label>Type: <span th:text="${jobPostActivityDto.jobType}"> Full-time</span></label>
+                            </div>
+                            <div class="col-md-3 text-right">
+                                <label>Remote: <span th:text="${jobPostActivityDto.remote}">Remote</span></label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="px-3 mb-3">
+                        <div class="row">
+                            <div class="col-md-9">
+                                <label class="large-label "> Job Description </label>
+                                <div th:utext="${jobPostActivityDto.jobDescription}"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-3 px-3">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <form th:action="@{/recruiter-dashboard/edit-job-post/{id}(id=${jobPostActivityDto.id})}" method="get">
+                                    <button class="btn-sec btn-red w-100" type="submit">Edit Job</button>
+                                </form>
+                            </div>
+                            <div class="col-md-3">
+                                <form th:action="@{/recruiter-dashboard/delete-job-post/{id}(id=${jobPostActivityDto.id})}" method="post">
+                                    <button class="btn-sec btn-black w-100" type="submit">Delete Job</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="box mt-3 px-3 pb-3">
+                    <label class="large-label mt-3">Applicants</label>
+                    <!-- If no seekers applied -->
+                    <div th:if="${#lists.isEmpty(appliedSeekers)}" class="mt-3">
+                        <p class="text-muted">No applicants have applied for this job yet.</p>
+                    </div>
+
+                    <!-- Iterate through seekers -->
+                    <div th:each="seekerProfileDto : ${appliedSeekers}"
+                         class="card shadow-sm rounded-3 p-3 mt-3"
+                         style="border: 1px solid #ddd;">
+
+                        <!-- Profile header with photo and name -->
+                        <div class="d-flex align-items-center mb-3">
+                            <img th:src="@{${seekerProfileDto.profilePhotoUrl}}"
+                                 class="rounded-circle me-3"
+                                 style="height:50px;width:50px;object-fit:cover;"
+                                 alt="Profile Photo"/>
+                            <div>
+                                <h5 class="mb-0" th:text="${seekerProfileDto.firstName + ' ' + seekerProfileDto.lastName}">Full Name</h5>
+                                <small class="text-muted" th:text="${seekerProfileDto.city + ', ' + seekerProfileDto.state + ', ' + seekerProfileDto.country}">
+                                    City, State, Country
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Row for Employment, Work Authorization, Skills -->
+                        <div class="row text-center mb-3">
+                            <!-- Employment Type -->
+                            <div class="col-md-4 border-end border-dark">
+                                <strong class="d-block mb-1">Employment Type</strong>
+                                <span th:text="${seekerProfileDto.employmentType}">Employment Type</span>
+                            </div>
+
+                            <!-- Work Authorization -->
+                            <div class="col-md-4 border-end border-dark">
+                                <strong class="d-block mb-1">Work Authorization</strong>
+                                <span th:text="${seekerProfileDto.workAuthorization}">Authorization Type</span>
+                            </div>
+
+                            <!-- Skills -->
+                            <div class="col-md-4">
+                                <strong class="d-block mb-1">Skills</strong>
+                                <div class="d-flex flex-wrap justify-content-center mt-1">
+                <span th:each="skill : ${seekerProfileDto.skills}"
+                      th:text="${skill.name}"
+                      class="badge bg-primary me-1 mb-1">Skill</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Resume Download Button (centered) -->
+                        <div class="text-center">
+                            <a th:href="@{/recruiter-dashboard/view-job-post/seeker-resume/{file}(file=${seekerProfileDto.resume})}" class="btn btn-sm btn-success px-3" download>
+                                <i class="fa-solid fa-download me-1"></i> Download Resume
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </article>
+        </section>
+    </body>
+</html>

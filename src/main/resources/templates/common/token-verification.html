@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
+    <link rel="stylesheet" type="text/css" media="all"  th:href="@{/css/font-awesome.min.css}" />
+    <link rel="stylesheet" type="text/css" media="all"  th:href="@{/css/style.css}" />
+    <link rel="stylesheet" type="text/css" media="all"  th:href="@{/css/styles.css}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Profile Setup</title>
+    <style>
+        .token-container {
+            max-width: 400px;
+            margin: 5% auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+        .token-input {
+            text-align: center;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+        }
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+<!--<div class="row" style="margin-right:0">-->
+<div class="row vh-100 m-0">
+    <div class="col-5 coffee_mug_background">
+        <div class="logo_left mt-3 pt-4 ms-5 pl-5">
+            <h2 class="logo" style="color: white">jobspring <span class="logo_com">.com</span></h2>
+        </div>
+    </div>
+    <div class="col-7 d-flex justify-content-center align-items-center">
+        <div class="token-container text-center">
+            <h3>Token Verification</h3>
+            <p>Enter the 6-digit Token sent to your email.</p>
+
+            <form th:action="@{/verify-token}" th:object="${verificationTokenDto}" method="post">
+                <input type="hidden" name="email" th:field="${verificationTokenDto.email}"/>
+                <div class="mb-3">
+                    <input type="text" minlength="6" maxlength="6" class="form-control token-input" th:field="${verificationTokenDto.token}" placeholder="Enter Token" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Verify</button>
+            </form>
+            <p id="error-message" th:if="${errorMessage}" th:text="${errorMessage}"
+               class="text-danger position-fixed p-2 bg-light border border-danger rounded"
+               style="bottom: 60px; left: 20px; z-index: 1050; display: none; opacity: 1; transition: opacity 1s ease;">
+            </p>
+        </div>
+    </div>
+</div>
+</body>
+<script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/main.js}"></script>
+<script>
+    function showMessage(id) {
+        const msgEl = document.getElementById(id);
+        if (msgEl && msgEl.textContent.trim() !== "") {
+            msgEl.style.display = 'block';
+            setTimeout(() => {
+                msgEl.style.opacity = '0'; // smooth fade-out
+                setTimeout(() => msgEl.style.display = 'none', 1000);
+            }, 10000); // visible for 5 seconds
+        }
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+        showMessage('error-message');
+    });
+</script>
+</html>

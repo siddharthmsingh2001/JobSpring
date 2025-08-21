@@ -1,0 +1,98 @@
+DROP DATABASE IF EXISTS jobspringdb;
+CREATE DATABASE IF NOT EXISTS jobspringdb;
+USE jobspringdb;
+
+CREATE TABLE IF NOT EXISTS account (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(60) NOT NULL,
+    account_type_id BIGINT REFERENCES account_type(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    locked TINYINT(1) NOT NULL, -- 0(false) 1(true)
+    enabled TINYINT(1) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS account_type(
+	id SERIAL PRIMARY KEY,
+    name VARCHAR(15) NOT NULL
+);
+
+INSERT INTO account_type(name) VALUES
+('RECRUITER'),
+('SEEKER');
+
+CREATE TABLE IF NOT EXISTS job_company(
+	id SERIAL PRIMARY KEY,
+    logo VARCHAR(255) DEFAULT NULL,
+    name VARCHAR(255) NOT NULL UNIQUE
+);
+
+CREATE TABLE IF NOT EXISTS job_location(
+	id SERIAL PRIMARY KEY,
+    city VARCHAR(255) DEFAULT NULL,
+    state VARCHAR(255) DEFAULT NULL,
+    country VARCHAR(255) DEFAULT NULL
+);
+
+CREATE TABLE seeker_profile(
+	account_id SERIAL NOT NULL REFERENCES account(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	first_name VARCHAR(100) DEFAULT NULL,
+	last_name VARCHAR(100) DEFAULT NULL,
+	profile_photo VARCHAR(255) DEFAULT NULL,
+    city VARCHAR(100) DEFAULT NULL,
+    state VARCHAR(255) DEFAULT NULL,
+    country VARCHAR(100) DEFAULT NULL,
+    employment_type VARCHAR(100) DEFAULT NULL,
+	work_authorization VARCHAR(100) DEFAULT NULL,
+	resume VARCHAR(255) DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS recruiter_profile(
+	account_id SERIAL NOT NULL REFERENCES account(id) ON DELETE CASCADE ON UPDATE CASCADE,
+	first_name VARCHAR(100) DEFAULT NULL,
+	last_name VARCHAR(100) DEFAULT NULL,
+    company VARCHAR(255) DEFAULT NULL,
+	profile_photo VARCHAR(255) DEFAULT NULL,
+    city VARCHAR(100) DEFAULT NULL,
+    state VARCHAR(255) DEFAULT NULL,
+    country VARCHAR(100) DEFAULT NULL
+);
+
+CREATE TABLE IF NOT EXISTS job_post_activity(
+	id SERIAL PRIMARY KEY,
+    job_description TEXT DEFAULT NULL,
+    job_title VARCHAR(255) DEFAULT NULL,
+    job_type VARCHAR(255) DEFAULT NULL,
+    posted_date DATETIME(6) DEFAULT NULL,
+    remote VARCHAR(255) DEFAULT NULL,
+    salary VARCHAR(255) DEFAULT NULL,
+    job_company_id BIGINT NOT NULL REFERENCES job_company(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    job_location_id BIGINT NOT NULL REFERENCES job_location(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    account_id BIGINT NOT NULL REFERENCES account(id) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS seeker_save(
+	id SERIAL PRIMARY KEY,
+    job_post_activity_id BIGINT REFERENCES job_post_activity(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    account_id BIGINT REFERENCES seeker_profile(account_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE(job_post_activity_id, account_id)
+);
+
+CREATE TABLE IF NOT EXISTS seeker_apply(
+	id SERIAL PRIMARY KEY,
+	apply_date DATETIME(6) DEFAULT NULL,
+    cover_letter VARCHAR(255) DEFAULT NULL,
+    job_post_activity_id BIGINT NOT NULL REFERENCES job_post_activity(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    account_id BIGINT REFERENCES seeker_profile(account_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE(job_post_activity_id, account_id)
+);
+
+CREATE TABLE skill(
+	id SERIAL PRIMARY KEY,
+    experience_level VARCHAR(50) DEFAULT NULL,
+    name VARCHAR(50) NOT NULL,
+    years_experience TINYINT DEFAULT NULL,
+    account_id BIGINT NOT NULL REFERENCES seeker_profile(account_id) ON DELETE CASCADE ON UPDATE CASCADE,
+    UNIQUE(name, account_id)
+);

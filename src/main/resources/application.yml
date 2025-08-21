@@ -1,0 +1,52 @@
+spring:
+  main:
+    banner-mode: off
+  sql:
+    init:
+      mode: always
+  data:
+    redis:
+      host: localhost
+      port: 6390
+  application:
+    name: JobSpring
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    username: account_user
+    password: account_pass
+    url: jdbc:mysql://localhost:3320/jobspringdb
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      enabled: true
+      minimum-idle: 1
+      maximum-pool-size: 5
+      pool-name: HikariPool
+      auto-commit: false
+  session:
+    store-type: jdbc
+    jdbc:
+      initialize-schema: always
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username:
+    password:
+    properties:
+      mail:
+        auth: true
+        smtp:
+          starttls:
+            enable: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org:
+      springframework:
+        security:
+          TRACE
+    com:
+      jobspring:
+        jobspring: TRACE

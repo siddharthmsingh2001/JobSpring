@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+    <head>
+        <meta charset="UTF-8"/>
+        <title>Dashboard</title>
+        <meta charset="utf-8"/>
+        <meta http-equiv="x-ua-compatible" content="ie=edge"/>
+        <meta name="description" content=""/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" type="text/css" media="all" th:href="@{/css/styles.css}"/>
+        <link th:rel="stylesheet" th:href="@{/webjars/bootstrap/css/bootstrap.min.css} "/>
+        <link th:rel="stylesheet" th:href="@{/webjars/font-awesome/css/all.css}"/>
+    </head>
+    <body>
+        <header class="navbar navbar-expand-lg navbar-dark">
+            <label class="mt-2 ms-5 font-weight-bold h5">
+                <a th:href="@{/seeker-dashboard}">JobSpring</a>
+                <span class="logo_com font-weight-bold h5" style="color: white" >.com</span>
+            </label>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation"> <span class="navbar-toggler-icon"></span> </button>
+            <div class="collapse navbar-collapse" id="navbarToggler">
+                <ul class="navbar-nav m-auto mt-2 mt-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" th:href="@{/seeker-dashboard}"> <i class="fas fa-search"> Search for Jobs</i> </a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" th:href="@{/seeker-dashboard/saved-jobs}"><i class="fa-solid fa-eye"></i>View Saved Jobs</a>
+                    </li>
+                    <li class="nav-item ">
+                        <a class="nav-link" th:href="@{/seeker-dashboard/profile}"><i class="fa-solid fa-pencil"></i>Edit Profile</a>
+                    </li>
+                </ul>
+                <img
+                        class="rounded-circle me-3"
+                        height="50px"
+                        width="50x"
+                        th:src="@{${seekerProfileDto.profilePhotoUrl}}"
+                />
+                <label th:if="${seekerProfileDto.firstName != null && seekerProfileDto.lastName != null}"
+                       th:text="${seekerProfileDto.firstName+' '+seekerProfileDto.lastName}"
+                       class="nav-item nav-link px-2 me-3">
+                </label>
+
+                <label th:unless="${seekerProfileDto.firstName != null && seekerProfileDto.lastName != null}" th:text="${username}"
+                       class="nav-item nav-link px-2 me-3">
+                </label>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit" class="myBtn-light me-5">Logout</button>
+                </form>
+            </div>
+        </header>
+
+        <section class="section">
+            <div class="sidenav px-5">
+                <div>
+                    <label class="text-uppercase color-dull font-weight-bold">Filter Results</label>
+                    <hr/>
+                    <!--         Maybe change the id of the Form there is a button for down           -->
+                    <form id="myForm" th:action="@{/seeker-dashboard}">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <label>Employment Type</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${partTime}" id="part-time" name="partTime" th:value="Part-Time" />
+                                    <label class="form-check-label" for="part-time" >Part-Time</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${fullTime}" id="full-time" name="fullTime" th:value="Full-Time" />
+                                    <label class="form-check-label" for="full-time" >Full-Time</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${freelance}" id="freelance" name="freelance" th:value="Freelance"/>
+                                    <label class="form-check-label" for="freelance" >Freelance</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label>Remote</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${remoteOnly}" id="remote-only" name="remoteOnly" th:value="Remote-Only" />
+                                    <label class="form-check-label" for="remote-only">Remote-Only</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${officeOnly}" id="office-only" name="officeOnly" th:value="Office-Only" />
+                                    <label class="form-check-label" for="office-only">Office-Only</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${partialRemote}" id="partial-remote" name="partialRemote" th:value="Partial-Remote" />
+                                    <label class="form-check-label" for="partial-remote">Partial-Remote</label>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <label>Date Posted</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${oneDay}" id="one-day" name="oneDay" th:value="One-Day" />
+                                    <label class="form-check-label" for="one-day">One-Day</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${sevenDay}" id="seven-day" name="sevenDay" th:value="Seven-Day" />
+                                    <label class="form-check-label" for="office-only">Seven-Day</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" th:checked="${thirtyDay}" id="thirty-day" name="thirtyDay" th:value="Thirty-Day" />
+                                    <label class="form-check-label" for="thirty-day">Thirty-Day</label>
+                                </div>
+                            </div>
+                        </div>
+                        <input id="hidJob" name="job" th:value="${job}" hidden>
+                        <input id="hidLoc" name="location" th:value="${location}" hidden>
+                    </form>
+                </div>
+            </div>
+            <article>
+                <div class="box">
+                    <h1 class="primary-title">Candidate Dashboard</h1>
+                    <div class="inner">
+                        <input id="job" class="radius-left" type="text" placeholder="Search for a job" name="job" th:value="${job}" />
+                        <input id="loc" class="" type="text" placeholder="Job Location" name="location" th:value="${location}" />
+                        <button class="radius-right" type="submit" form="myForm"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <label class="large-label px-3 mb-3">Search Results</label>
+                    <th:block th:each="jobPostActivityDto:${jobPosts}">
+                        <div class="box mt-2">
+                            <a th:href="@{/seeker-dashboard/view-job-post/{id}(id=${jobPostActivityDto.id})}"
+                               style="text-decoration: none; color: black">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <label class="job-title text-left">
+                                            [[${jobPostActivityDto.jobTitle}]]
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4 text-center">
+                                        <label th:text="${jobPostActivityDto.jobLocationDto.city + ', ' + jobPostActivityDto.jobLocationDto.state}">
+                                            City State
+                                        </label>
+                                    </div>
+                                    <div class="col-md-4 text-right">
+                                        <label th:text="${jobPostActivityDto.jobCompanyDto.name}">
+                                            Recruiter Company Name
+                                        </label>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </th:block>
+                </div>
+            </article>
+        </section>
+        <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <script type="text/javascript" th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
+        <script type="text/javascript" th:src="@{/js/main.js}"></script>
+        <script>
+            $('#job').change(function() {
+              $('#hidJob').val($(this).val());
+            });
+            $('#loc').change(function() {
+              $('#hidLoc').val($(this).val());
+            });
+        </script>
+    </body>
+</html>
